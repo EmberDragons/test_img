@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html style = "font-size:150%" id="friend">
+    <title> Web Life - Profile </title> 
+    <body>
+        <input type="file" id="fileInput">
+        <button onclick="test()">Upload to Imgur</button>
+        <p id="res">result</p>
+        <script>
+            async function test() {
+                const fileInput = document.getElementById('fileInput');
+                const file = fileInput.files[0];
+                console.log("File selected:", file);
+                if (!file) {
+                    alert("Please select a file first!");
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append("image", file);
+
+                const IMGUR_CLIENT_ID = "3b2d954b1608ae6";
+
+                try {
+                    const res = await fetch("https://api.imgur.com/3/image", {
+                        method: "POST",
+                        headers: {
+                            Authorization: `Client-ID ${IMGUR_CLIENT_ID}`,
+                        },
+                        body: formData
+                    });
+
+                    const data = await res.json();
+                    if (data.success) {
+                        document.getElementById("res").textContent = data.data.link;
+                        console.log("Uploaded:", data.data.link);
+                    } else {
+                        throw new Error(data.data.error);
+                    }
+                } catch (err) {
+                    console.error("Upload failed:", err.message);
+                    alert("Imgur upload failed: " + err.message);
+                }
+            }
+        </script>
+    </body>
+</html>
